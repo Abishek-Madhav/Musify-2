@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musify</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #6200ea;
+            margin-top: 50px;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .greeting {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: inline-block;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"] {
+            width: 250px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px 0 0 5px; 
+            font-size: 1em;
+        }
+
+        input[type="text"]:focus {
+            border-color: #6200ea;
+            outline: none;
+        }
+
+        button[type="submit"] { /* Use button[type="submit"] for better specificity */
+            padding: 5.5px 10px 9.5px;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            background-color: #6200ea;
+            color: transparent; 
+            cursor: pointer;
+            font-size: 1em; 
+        }
+
+        button[type="submit"]:hover {
+            background-color: #3700b3; 
+        }
+
+        .glyphicon-search {
+            color: #fff; 
+            position: relative;
+            left: 0.5px;
+            top: 5px;
+            font-size: 1.5em; 
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        /* Logout Button */
+        .logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .logout:hover {
+            background-color: #3700b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Logout Button -->
+    <button class="logout" onclick="window.location.href='/logout/'">Logout</button>
+
+    <h1>Musify</h1>
+    <div class="container">
+        <p class="greeting">Welcome back, {{ name }}! 🎶</p>
+        <form action="track">
+            <input type="text" name="song" placeholder="What do you want to play?">
+            <button type="submit">
+                <span class="glyphicon glyphicon-search"></span>
+            </button> 
+        </form>
+    </div>
+    <footer>
+        <p>Made with ❤️ by Abishek Madhav</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Musify</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      text-align: center;
+    }
+
+    h1, h2 {
+      color: #333;
+    }
+
+    .track-details, .music-player {
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 600px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    button {
+      background: #6200ea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    button:hover {
+      background: #3700b3;
+    }
+
+    #seekbar {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    #current-time {
+      color: #555;
+      margin-top: 10px;
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    .back {
+      position: absolute;
+      top: 9px;
+      left: 25px;
+      background-color: #6200ea;
+      color: white;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 5px;
+      font-size: 1.2em;
+      cursor: pointer;
+  }
+
+    .back:hover {
+      background-color: #3700b3;
+      }
+  </style>
+</head>
+<body>
+
+  <button class="back" onclick="window.location.href='{% url 'home' %}';">Home</button>
+  <!-- Top Result Section -->
+  <h1>Top Result</h1>
+
+  <!-- Music Player Section -->
+  <div class="music-player">
+    <h2>Music Player</h2>
+    <audio id="audio" src="{{ soundcloud_track.audio.0.url }}"></audio>
+    <div class="controls">
+      <button style="font-size: 1em" id="loop">L</button>
+      <button id="rewind">⏮</button>
+      <button id="play-pause">▶</button>
+      <button id="forward">⏭</button>
+      <button style="font-size: 1em" id="speed">1x</button>
+      <input type="range" id="seekbar" value="0" max="100">
+    </div>      
+    <p id="current-time">0:00</p>
+  </div>
+
+  <!-- Track Details Section -->
+  <div class="track-details">
+    {% if soundcloud_track %}
+      <p><strong>Duration:</strong> {{ soundcloud_track.audio.0.durationText }}</p>
+    {% else %}
+      <p>Sorry, no SoundCloud track found.</p>
+    {% endif %}
+
+    {% if spotify_track %}
+      <p><strong>Artist:</strong>
+        {% for artist in spotify_track.artists %}
+          <a href="{{ artist.shareUrl }}" target="_blank">{{ artist.name }}</a>
+        {% endfor %}
+      </p>
+      <p><a href="{{ spotify_track.shareUrl }}" target="_blank"><strong>Spotify URL</strong></a></p>
+      <p><img src="{{ spotify_track.album.cover.0.url }}" alt="Album Cover"></p>
+    {% else %}
+      <p>No Spotify track data available.</p>
+    {% endif %}
+
+    {% if soundcloud_track %}
+      <button onclick="window.open('{{ soundcloud_track.audio.0.url }}', '_blank')">Download Audio</button>
+    {% endif %}
+  </div>
+
+  <script>
+    const audio = document.getElementById('audio');
+    const playPauseBtn = document.getElementById('play-pause');
+    const rewindBtn = document.getElementById('rewind');
+    const forwardBtn = document.getElementById('forward');
+    const seekbar = document.getElementById('seekbar');
+    const currentTimeDisplay = document.getElementById('current-time');
+    const loopBtn = document.getElementById('loop');
+    const speedBtn = document.getElementById('speed');
+  
+    let isPlaying = false;
+    let speedIndex = 0; // Track the current speed index
+    const speeds = [1, 1.25, 1.5, 1.75, 2]; // Array of playback speeds
+  
+    // Play or Pause the audio
+    playPauseBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        audio.pause();
+        playPauseBtn.textContent = '▶';
+      } else {
+        audio.play();
+        playPauseBtn.textContent = '❚❚';
+      }
+      isPlaying = !isPlaying;
+    });
+  
+    // Rewind the audio by 10 seconds
+    rewindBtn.addEventListener('click', () => {
+      audio.currentTime = Math.max(audio.currentTime - 10, 0);
+    });
+  
+    // Forward the audio by 10 seconds
+    forwardBtn.addEventListener('click', () => {
+      audio.currentTime = Math.min(audio.currentTime + 10, audio.duration);
+    });
+  
+    // Update the seekbar and current time display
+    audio.addEventListener('timeupdate', () => {
+      const progress = (audio.currentTime / audio.duration) * 100;
+      seekbar.value = progress;
+  
+      const minutes = Math.floor(audio.currentTime / 60);
+      const seconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+      currentTimeDisplay.textContent = `${minutes}:${seconds}`;
+    });
+  
+    // Seek to a specific time
+    seekbar.addEventListener('input', () => {
+      const seekTime = (seekbar.value / 100) * audio.duration;
+      audio.currentTime = seekTime;
+    });
+  
+    // Toggle loop functionality
+    loopBtn.addEventListener('click', () => {
+      audio.loop = !audio.loop;
+      loopBtn.textContent = audio.loop ? 'UL' : 'L'; // Change icon to indicate looping status
+    });
+  
+    // Change playback speed on button click
+    speedBtn.addEventListener('click', () => {
+      speedIndex = (speedIndex + 1) % speeds.length; // Cycle through speeds
+      audio.playbackRate = speeds[speedIndex]; // Set playback speed
+      speedBtn.textContent = `${speeds[speedIndex]}x`; // Update button text
+    });
+
+    // Error handling for audio loading
+    audio.addEventListener('error', () => {
+      console.error('Audio failed to load. Reloading the page...');
+      location.reload(); // Reload the page if an error occurs
+    });
+  </script>
+  
+ 
+</body>
+</html>
